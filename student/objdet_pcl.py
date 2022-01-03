@@ -11,10 +11,12 @@
 #
 
 # general package imports
+from operator import truediv
 import cv2
 import numpy as np
 import torch
 import zlib
+import open3d
 
 # add project directory to python path to enable relative imports
 import os
@@ -37,23 +39,28 @@ import misc.objdet_tools as tools
 # visualize lidar point-cloud
 def show_pcl(pcl):
 
-    ####### ID_S1_EX2 START #######
-    #######
-    print("student task ID_S1_EX2")
-
     # step 1 : initialize open3d with key callback and create window
+    viz = open3d.visualization.VisualizerWithKeyCallback()
+    viz.create_window(window_name="show_pcl")
 
     # step 2 : create instance of open3d point-cloud class
+    pcl_3d = open3d.geometry.PointCloud()
 
     # step 3 : set points in pcd instance by converting the point-cloud into 3d vectors (using open3d function Vector3dVector)
-
+    pcl_3d.points = open3d.utility.Vector3dVector(pcl[:, :3])
+    
     # step 4 : for the first frame, add the pcd instance to visualization using add_geometry; for all other frames, use update_geometry instead
-
+    viz.add_geometry(pcl_3d)
+    
     # step 5 : visualize point cloud and keep window open until right-arrow is pressed (key-code 262)
+    def key_cb(viz):
+        #viz.update_geometry(pcl_3d)
+        #viz.update_renderer()
+        #viz.poll_events()
+        viz.close()
 
-    #######
-    ####### ID_S1_EX2 END #######
-
+    viz.register_key_callback(262, key_cb)
+    viz.run()
 
 # visualize range image
 def show_range_image(frame, lidar_name):
