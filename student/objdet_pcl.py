@@ -42,7 +42,10 @@ def show_pcl(pcl):
     # step 1 : initialize open3d with key callback and create window
     viz = open3d.visualization.VisualizerWithKeyCallback()
     viz.create_window(window_name="show_pcl")
-
+    opt = viz.get_render_option()
+    opt.background_color = np.asarray([25/255, 23/255, 36/255])
+    #opt.background_color = np.asarray([0, 0, 0])
+    
     # step 2 : create instance of open3d point-cloud class
     pcl_3d = open3d.geometry.PointCloud()
 
