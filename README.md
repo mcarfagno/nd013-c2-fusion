@@ -15,8 +15,7 @@ Some features that sand out that can be useful for object detection:
 * **Aspect Ratio**: all vehicles have appear to have a similar aspect ratio, expecitally in a bev representation, including otherwise outliers such as pick up trucks.
 * **Windshields**: glass does not reflect and does not cause a energy return, as such in all vehicles it appears as a "hole" in the pointcloud wich is very characteristic.
 * **Side mirrors**: despite being small, they stand out quite a lot. I also suspect they create a stronger *intensity* return signal being reflective.
-
-The **Tires** tires are easily cut-off in the top lidar due to limitied field of view and depending on the observation point.
+* **Tires** tires are easily cut-off in the top lidar due to limitied field of view, but still manage to stand out.
 
 ### Visualize range image channels (ID_S1_EX1)
 <img src="img/midterm/range_image.png" >
@@ -33,7 +32,7 @@ The **Tires** tires are easily cut-off in the top lidar due to limitied field of
 <img src="img/midterm/bev_detections.png" >
 
 ### Compute precision and recall (ID_S4_EX3)
-
+Final results are `precision = 0.9506578947368421, recall = 0.9444444444444444` with iou_treshold of 0.5
 <img src="img/midterm/eval_results.png" >
 
 ## Project File Structure
