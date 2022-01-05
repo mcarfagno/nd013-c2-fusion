@@ -236,6 +236,7 @@ def detect_objects(input_bev_maps, model, configs):
             )
             detections = detections.cpu().numpy().astype(np.float32)
             detections = post_processing(detections, configs)
+            detections = detections[0][1]
 
             # print("FPN_RESNET output: \n {}".format(detections))
 
@@ -243,12 +244,11 @@ def detect_objects(input_bev_maps, model, configs):
     objects = []
 
     ## step 1 : check whether there are any detections
-    vehicles = detections[0][1]
-    if len(vehicles) == 0:
+    if len(detections) == 0:
         return objects
 
     ## step 2 : loop over all detections
-    for obj in vehicles:
+    for obj in detections:
 
         ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
         score, bev_x, bev_y, bev_z, bev_h, bev_w, bev_l, bev_yaw = obj
@@ -264,9 +264,9 @@ def detect_objects(input_bev_maps, model, configs):
         z = bev_z + configs.lim_z[0]
         w = bev_w / configs.bev_width * (configs.lim_y[1] - configs.lim_y[0])
         l = bev_l / configs.bev_height * (configs.lim_x[1] - configs.lim_x[0])
-        
+
         ## step 4 : append the current object to the 'objects' array
         objects.append([1, x, y, z, bev_h, w, l, yaw])
 
-    # print(objects)    
+    # print(objects)
     return objects
