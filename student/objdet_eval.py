@@ -93,7 +93,6 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
                 intersection = lab_box.intersection(obj_box).area
                 union = lab_box.union(obj_box).area
                 iou = intersection / union
-                #print(iou)  # iou seems allways low
 
                 ## step 6 : if IOU exceeds min_iou threshold, store [iou,dist_x, dist_y, dist_z] in matches_lab_det and increase the TP count
                 if iou > min_iou:
