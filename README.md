@@ -1,20 +1,40 @@
 
 # SDCND : Sensor Fusion and Tracking
-This is the project for the second course in the  [Udacity Self-Driving Car Engineer Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213) : Sensor Fusion and Tracking. 
 
-In this project, you'll fuse measurements from LiDAR and camera and track vehicles over time. You will be using real-world data from the Waymo Open Dataset, detect objects in 3D point clouds and apply an extended Kalman filter for sensor fusion and tracking.
+## Midterm Submission
 
-<img src="img/img_title_1.jpeg"/>
+The following are some car examples gathered from the pointclouds in the dataset by setting `exec_visualization = ["show_pcl"]`:
 
-The project consists of two major parts: 
-1. **Object detection**: In this part, a deep-learning approach is used to detect vehicles in LiDAR data based on a birds-eye view perspective of the 3D point-cloud. Also, a series of performance measures is used to evaluate the performance of the detection approach. 
-2. **Object tracking** : In this part, an extended Kalman filter is used to track vehicles over time, based on the lidar detections fused with camera detections. Data association and track management are implemented as well.
+| | Car Samples from PCL | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img src="img/midterm/cars_1.png" alt="1" width = 360px height = 360px >|<img src="img/midterm/cars_4.png" alt="1" width = 360px height = 360px >|<img src="img/midterm/cars_7.png" alt="1" width = 360px height = 360px >|
+|<img src="img/midterm/cars_2.png" alt="2" width = 360px height = 360px >|<img src="img/midterm/cars_5.png" alt="2" width = 360px height = 360px >|<img src="img/midterm/cars_8.png" alt="2" width = 360px height = 360px >|
+|<img src="img/midterm/cars_3.png" alt="3" width = 360px height = 360px >|<img src="img/midterm/cars_6.png" alt="3" width = 360px height = 360px >|<img src="img/midterm/cars_9.png" alt="3" width = 360px height = 360px >|
 
-The following diagram contains an outline of the data flow and of the individual steps that make up the algorithm. 
+Some features that sand out that can be useful for object detection:
+* **Aspect Ratio**: all vehicles have appear to have a similar aspect ratio, expecitally in a bev representation, including otherwise outliers such as pick up trucks.
+* **Windshields**: glass does not reflect and does not cause a energy return, as such in all vehicles it appears as a "hole" in the pointcloud wich is very characteristic.
+* **Side mirrors**: despite being small, they stand out quite a lot. I also suspect they create a stronger *intensity* return signal being reflective.
 
-<img src="img/img_title_2_new.png"/>
+The **Tires** tires are easily cut-off in the top lidar due to limitied field of view and depending on the observation point.
 
-Also, the project code contains various tasks, which are detailed step-by-step in the code. More information on the algorithm and on the tasks can be found in the Udacity classroom. 
+### Visualize range image channels (ID_S1_EX1)
+<img src="img/midterm/range_image.png" >
+
+### Compute intensity layer of the BEV map (ID_S2_EX2)
+<img src="img/midterm/bev_intensity.png" >
+
+### Compute height layer of the BEV map (ID_S2_EX3)
+
+<img src="img/midterm/bev_height.png" >
+
+### Extract 3D bounding boxes from model response (ID_S3_EX2)
+
+<img src="img/midterm/bev_detections.png" >
+
+### Compute precision and recall (ID_S4_EX3)
+
+<img src="img/midterm/eval_results.png" >
 
 ## Project File Structure
 
@@ -65,12 +85,18 @@ Also, the project code contains various tasks, which are detailed step-by-step i
 ### Cloning the Project
 In order to create a local copy of the project, please click on "Code" and then "Download ZIP". Alternatively, you may of-course use GitHub Desktop or Git Bash for this purpose. 
 
-### Python
-The project has been written using Python 3.7. Please make sure that your local installation is equal or above this version. 
-
 ### Package Requirements
-All dependencies required for the project have been listed in the file `requirements.txt`. You may either install them one-by-one using pip or you can use the following command to install them all at once: 
-`pip3 install -r requirements.txt` 
+I recommend using **anaconda** to create an isolated project python environment. All dependencies required for recreating the project environment `project-dev` have been listed in the file `environment.yml`.
+
+Create the env:
+```
+conda env create --file environment.yml
+```
+
+Activate the env:
+```
+conda activate project-dev
+```
 
 ### Waymo Open Dataset Reader
 The Waymo Open Dataset Reader is a very convenient toolbox that allows you to access sequences from the Waymo Open Dataset without the need of installing all of the heavy-weight dependencies that come along with the official toolbox. The installation instructions can be found in `tools/waymo_reader/README.md`. 
