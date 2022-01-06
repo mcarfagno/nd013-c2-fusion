@@ -43,9 +43,9 @@ def show_pcl(pcl):
     viz = open3d.visualization.VisualizerWithKeyCallback()
     viz.create_window(window_name="show_pcl")
     opt = viz.get_render_option()
-    opt.background_color = np.asarray([25/255, 23/255, 36/255])
-    #opt.background_color = np.asarray([0, 0, 0])
-    
+    opt.background_color = np.asarray([25 / 255, 23 / 255, 36 / 255])
+    # opt.background_color = np.asarray([0, 0, 0])
+
     # step 2 : create instance of open3d point-cloud class
     pcl_3d = open3d.geometry.PointCloud()
 
@@ -97,6 +97,12 @@ def show_range_image(frame, lidar_name):
     # step 6 : stack the range and intensity image vertically using np.vstack and convert the result to an unsigned 8-bit integer
     img_range_intensity = np.vstack((img_range, img_intensity)).astype(np.uint8)
 
+    # crop image by +-90 around the middle
+    width = img_range_intensity.shape[1]  # full width is 360deg
+    img_range_intensity = img_range_intensity[
+        :, int(width / 2 - width / 4) : int(width / 2 + width / 4)
+    ]
+
     return img_range_intensity
 
 
@@ -140,7 +146,9 @@ def bev_from_pcl(lidar_pcl, configs):
     intensity_map = np.zeros((configs.bev_height, configs.bev_width))
 
     # step 2 : re-arrange elements in lidar_pcl_cpy by sorting first by x, then y, then -z (use numpy.lexsort)
-    idx_order = np.lexsort((-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0]))
+    idx_order = np.lexsort(
+        (-lidar_pcl_cpy[:, 2], lidar_pcl_cpy[:, 1], lidar_pcl_cpy[:, 0])
+    )
     lidar_pcl_cpy = lidar_pcl_cpy[idx_order]
 
     ## step 3 : extract all points with identical x and y such that only the top-most z-coordinate is kept (use numpy.unique)
@@ -153,7 +161,9 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 4 : assign the intensity value of each unique entry in lidar_top_pcl to the intensity map
     ##          make sure that the intensity is scaled in such a way that objects of interest (e.g. vehicles) are clearly visible
     ##          also, make sure that the influence of outliers is mitigated by normalizing intensity on the difference between the max. and min. value within the point cloud
-    intensity_map[np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])] = lidar_pcl_top[:, 3]
+    intensity_map[
+        np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])
+    ] = lidar_pcl_top[:, 3]
     intensity_map[intensity_map > 1.0] = 1.0
     intensity_map /= np.amax(intensity_map) - np.amin(intensity_map)
 
@@ -171,13 +181,15 @@ def bev_from_pcl(lidar_pcl, configs):
     ## step 2 : assign the height value of each unique entry in lidar_top_pcl to the height map
     ##          make sure that each entry is normalized on the difference between the upper and lower height defined in the config file
     ##          use the lidar_pcl_top data structure from the previous task to access the pixels of the height_map
-    height_map[np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])] = lidar_pcl_top[:, 2]
+    height_map[
+        np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])
+    ] = lidar_pcl_top[:, 2]
     height_map /= np.abs(configs.lim_z[1] - configs.lim_z[0])
 
     ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-    #cv2.imshow("height", height_map)
-    #cv2.waitKey(0)
-    #cv2.destroyAllWindows()
+    # cv2.imshow("height", height_map)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
 
     # Compute density layer of the BEV map
 
