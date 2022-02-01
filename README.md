@@ -1,6 +1,62 @@
 
 # SDCND : Sensor Fusion and Tracking
 
+## Finals Submission
+
+<img src="img/finals/results.gif" alt="results" >
+
+### Writeup: Track 3D-Objects Over Time
+
+Here is a short recap of the project steps and the respective results:
+
+The first task involved performing the tracking of a single vehicle in 3D by implementing a **Kalman Filter**. A constant velocity model was used caractherized by the following **system matrix**:
+
+$$
+\mathbf{F}(\Delta t) = \begin{pmatrix} 1 & 0 & 0 & \Delta t & 0 & 0\\ 0 & 1 & 0 & 0 & \Delta t & 0\\ 0 & 0 & 1 & 0& 0& \Delta t \\ 0 & 0 & 0 & 1 & 0& 0\\0 & 0& 0& 0& 1& 0 \\0 & 0& 0& 0& 0& 1 \end{pmatrix} 
+$$
+
+And by the following **process noise**:
+$$
+\mathbf{Q}(\Delta t, q)=\begin{pmatrix} \frac 1{3} \left(\Delta t\right)^3 q & 0 & 0 & \frac 1{2} \left(\Delta t\right)^2 q& 0 & 0\\ 0 & \frac 1{3} \left(\Delta t\right)^3 q& 0 & 0 & \frac 1{2} \left(\Delta t\right)^2 q & 0 \\ 0 & 0 & \frac 1{3} \left(\Delta t\right)^3 q& 0 & 0 & \frac 1{2} \left(\Delta t\right)^2 q & \\ \frac 1{2} \left(\Delta t\right)^2 q& 0 & 0 & \Delta t q& 0 & 0 \\ 0 & \frac 1{2} \left(\Delta t\right)^2 q& 0 & 0 & \Delta t q & 0 \\ 0 & 0 & \frac 1{2} \left(\Delta t\right)^2 q& 0 & 0 & \Delta t q\end{pmatrix}
+$$
+Where *q* is the acceleration uncertainty and is a design parameter set to $3 m/s^2$.
+
+In this step only a single vehicle was tracked, using only the measurements from the lidar sensor.
+
+Here are the results for this step: the RMSE result is below the expected $0.35$ threshold from the project rubric.
+<img src="img/finals/ex1_RMSE.png" alt="2" width = 720px height = 360px >
+
+The second task involved implementing most of the track management algorithm. This required initializing new tracks as well managing and deleting ghost tracks. For the deletion the following **heuristic** was implemented wich delted tracks if their uncertainty grew outside of a $3m$ radius ellipsoid.
+
+$$
+\mathbf{P}_{11}> 3^2 \cup \mathbf{P}_{22}> 3^2
+$$
+
+Here are the results for this step: the RMSE result is below the expected $0.8$ threshold from the project rubric.
+<img src="img/finals/ex2_RMSE.png" alt="2" width = 720px height = 360px >
+
+The third task involved implementing the **Simple Nearest Neighbour**(SNN) data association algorithm. Here is when the project became more complex because multiple vehicles are tracked simultaneusly, and debugging is more difficult. The SNN algorithm is implemented via association matrix A wich requires computing the Mahalanobis distance for each track/measure pair and associating the nearest measures to their track.
+
+Here are the results for this step: the RMSE shows there are only 3 tracks with no extra ghost tracks as specified in the project rubric.
+<img src="img/finals/ex3_RMSE.png" alt="3" width = 720px height = 360px >
+
+The final task involved improving step 3 by including camera measurements in the filter. This required including camera measurements when initializing tracks as well implementing the non-linear **measurement function** h:
+
+$$
+h(\mathbf{x}) = \large \begin{pmatrix} c_i-\frac{f_i\cdot p_y}{p_x}\\ c_j-\frac{f_j\cdot p_z}{p_x} \end{pmatrix}
+$$
+
+Where the camera calibration parameter *f* and *c* were provided.
+
+Here are the results for the final step: the RMSE is below $0.25$ as specified in the project rubric.
+<img src="img/finals/ex4_RMSE.png" alt="4" width = 720px height = 360px >
+
+The final step clearly shows that there are benefits in camera-lidar fusion: the tracking accuracy is overall increased as shown by the last two plots. Moreover in real scenarios using multiple (and even redundant) sensors can improve the safety of the self driving vehicle.
+
+In my view one major challenge a sensor fusion system will face in real-life scenario has to be with sensor timing: we could not see in this project because curated data from WAYMO was provided, but in real-life we may encounter poorly synchronized sensors with delayed time stamps which can cause the filter to have poor results.
+
+We could see improvements when integrating camera measurements, although the camera has a limited field of view when compared to lidar, so in my view it could be a good idea to include additional cameras to cover the blind spots of the front camera. This should allow to discard ghost tracks on the sides more quickly. An other idea could be using an IMU to estimate the current velocity of our vehicle: in the lecures it was explained that the parameters of the filter have tobe tuned depending on the current driving scenario, this way we could change them dynamically depending on the car driving speed, potentially improving the reliability of our tracking system.
+
 ## Midterm Submission
 
 The following are some car examples gathered from the pointclouds in the dataset by setting `exec_visualization = ["show_pcl"]`:
